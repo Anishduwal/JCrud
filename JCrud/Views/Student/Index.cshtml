@@ -1,0 +1,177 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Student Details</h2>
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Please enter the details below.</h3>
+        </div>
+        <div class="panel-body">
+                <input type="hidden" name="id" id="id" value="0" />
+            <div class="form-group col-md-5">
+                <label>First Name</label>
+                <input type="text" name="FirstName" id="First_Name" class="form-control" placeholder="Enter First Name" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Last Name</label>
+                <input type="text" name="LastName" id="Last_Name" class="form-control" placeholder="Enter Last Name" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Email</label>
+                <input type="text" name="Email" id="Email" class="form-control" placeholder="Enter Email" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>City</label>
+                <input type="text" name="City" id="City" class="form-control" placeholder="Enter City" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Street Address</label>
+                <input type="text" name="StreetAddress" id="Street_Address" class="form-control" placeholder="Enter Street Address" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Phone Number</label>
+                <input type="text" name="PhoneNumber" id="Phone_Number" class="form-control" placeholder="Enter Phone number" required="" />
+            </div>
+
+            <div class="form-group col-md-1">
+                <div style="float: right; display:inline-block;">
+                    <input class="btn btn-primary" name="submitButton" id="btnSave" value="Save" type="button">
+                </div>
+            </div>
+        </div>
+    </div><hr />
+    <table id="tblStudent" class="table table-bordered table-striped table-responsive table-hover">
+        <thead>
+            <tr>
+                <th align="left" class="productth">ID</th>
+                <th align="left" class="productth">First Name</th>
+                <th align="left" class="productth">Last Name</th>
+                <th align="left" class="productth">Email</th>
+                <th align="left" class="productth">City</th>
+                <th align="left" class="productth">Street Address</th>
+                <th align="left" class="productth">Phone number</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        function LoadData() {
+            $("#tblStudent tbody tr").remove();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Read", "Student")',
+                dataType: 'json',
+                data: { id: '' },
+                success: function (data) {
+                    var items = '';
+                    $.each(data, function (i, item) {
+                        var rows = "<tr>"
+                            + "<td class='prtoducttd'>" + item.id + "</td>"
+                            + "<td class='prtoducttd'>" + item.First_Name + "</td>"
+                            + "<td class='prtoducttd'>" + item.Last_Name + "</td>"
+                            + "<td class='prtoducttd'>" + item.Email + "</td>"
+                            + "<td class='prtoducttd'>" + item.City + "</td>"
+                            + "<td class='prtoducttd'>" + item.Street_Address + "</td>"
+                            + "<td class='prtoducttd'>" + item.Phone_number + "</td>"
+                            + "<td class='prtoducttd'>" + '<input type = "button" value = "Edit" name="Edit" onclick="Edit(' + item.id + ')"/>  <input type = "button" value = "Delete" name="Delete" onclick="Delete(' + item.id + ')"/>' + "</td>"
+                        $('#tblStudent tbody').append(rows);
+                    });
+                },
+                error: function (ex) {
+                    var r = jQuery.parseJSON(ex);
+                    alert("Message: " + r.Message);
+                    alert("StackTrace: " + r.StackTrace);
+                    alert("ExceptionType: " + r.ExceptionType);
+                }
+            });
+            return false;
+        }
+
+        $(function () {
+        LoadData();
+        $("#btnSave").click(function () {
+            //alert("");
+            var std = {};
+            std.id = $('#id').val();
+            std.First_Name = $("#First_Name").val();
+            std.Last_Name = $("#Last_Name").val();
+            std.Email = $('#Email').val();
+            std.City = $("#City").val();
+            std.Street_Address = $("#Street_Address").val();
+            std.Phone_number = $("#Phone_Number").val();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Read", "Student")',
+                data: '{model: ' + JSON.stringify(std) + '}',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                   alert("Data has been added successfully.");
+                    LoadData();
+                    $('#id').val("");
+                    $('#First_Name').val("");
+                    $('#Last_Name').val("");
+                    $('#Email').val("");
+                    $('#City').val("");
+                    $('#Street_Address').val("");
+                    $('#Phone_Number').val("");
+                    $('#btnSave').val("Save");
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+            });
+            return false;
+        });
+        });
+
+        function Delete(id) {
+            var del = { id: id };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Delete", "Student")',
+                data: JSON.stringify(del),
+                contentType: 'application/json, charset= utf-8',
+                success: function (data) {
+                    LoadData();
+                    alert(data.Message);
+                },
+                error: function () {
+                    alert('Could not delete the employee.')
+                }
+            });
+        }
+
+        @*function Edit(id) {
+            $.ajax({
+                async: true,
+                type: 'GET',
+                url: @Url.Action("Edit", "Student"),
+                data: { ID: id },
+                dataType: 'JSON',
+                contentType: 'application/json, charset=utf-8',
+                success: function (data) {
+                    $('#First_Name').val(data.First_Name);
+                    $('#Last_Name').val(data.Last_Name);
+                    $('#Email').val(data.Email);
+                    $('#City').val(data.City);
+                    $('#Street_Address').val(data.Street_Address);
+                    $('#Phone_number').val(data.Phone_number);
+                    $('#id').val(data.id);
+                    $('#btnSave').val("Update");
+                },
+                error: function () {
+                    alert("Problem to edit employee.")
+                }
+            });
+        }*@
+
+    </script>
+}

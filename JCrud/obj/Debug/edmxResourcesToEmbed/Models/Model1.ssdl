@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="DemoModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Student_Address_Details">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="bigint" Nullable="false" />
+    <Property Name="Appartment_Number" Type="bigint" />
+    <Property Name="Street_Address" Type="varchar" MaxLength="50" />
+    <Property Name="City" Type="varchar" MaxLength="50" />
+    <Property Name="State" Type="varchar" MaxLength="50" />
+    <Property Name="Zipcode" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Student_Details">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="First_Name" Type="varchar" MaxLength="50" />
+    <Property Name="Last_Name" Type="varchar" MaxLength="50" />
+    <Property Name="Email" Type="varchar" MaxLength="50" />
+    <Property Name="DOB" Type="varchar" MaxLength="50" />
+    <Property Name="Phone_number" Type="nchar" MaxLength="10" />
+  </EntityType>
+  <Association Name="FK_Student_address_detail_Student_detail">
+    <End Role="Student_Details" Type="Self.Student_Details" Multiplicity="1" />
+    <End Role="Student_Address_Details" Type="Self.Student_Address_Details" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Student_Details">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Student_Address_Details">
+        <PropertyRef Name="id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="DemoModelStoreContainer">
+    <EntitySet Name="Student_Address_Details" EntityType="Self.Student_Address_Details" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Student_Details" EntityType="Self.Student_Details" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Student_address_detail_Student_detail" Association="Self.FK_Student_address_detail_Student_detail">
+      <End Role="Student_Details" EntitySet="Student_Details" />
+      <End Role="Student_Address_Details" EntitySet="Student_Address_Details" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
